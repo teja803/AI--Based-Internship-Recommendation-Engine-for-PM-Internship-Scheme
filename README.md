@@ -1,0 +1,2 @@
+# AI--Based-Internship-Recommendation-Engine-for-PM-Internship-Scheme
+The AI-Based Internship Recommendation Engine for PM Internship Scheme is a smart web application designed to help students discover suitable internship opportunities based on their skills, interests, academic background, and career goals. The system uses Artificial Intelligence and Machine Learning techniques to analyze student profiles.
