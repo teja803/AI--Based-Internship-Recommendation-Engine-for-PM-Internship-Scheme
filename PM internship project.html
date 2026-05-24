@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PM Internship Recommendation Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        .step-active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scale(1.1);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .notification {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .goog-te-banner-frame { display: none !important; }
+        .goog-te-menu-value { padding: 8px !important; }
+        body { top: 0 !important; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Language Selector -->
+    <div class="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg p-2">
+        <div id="google_translate_element"></div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 left-4 z-50 space-y-2"></div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b-4 border-orange-500">
+        <div class="max-w-6xl mx-auto px-4 py-6">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-xl">🇮🇳</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">InternSaathi - PM Internship Scheme</h1>
+                    <p class="text-gray-600">AI-Powered Internship Recommendations</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Indicator -->
+    <div class="max-w-4xl mx-auto px-4 py-6">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex space-x-4">
+                <div id="step1-indicator" class="step-indicator step-active w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">1</div>
+                <div id="step2-indicator" class="step-indicator w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">2</div>
+                <div id="step3-indicator" class="step-indicator w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">3</div>
+                <div id="step4-indicator" class="step-indicator w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">4</div>
+                <div id="step5-indicator" class="step-indicator w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">5</div>
+            </div>
+            <div class="text-sm text-gray-600">
+                <span id="currentStep">Step 1</span> of 5
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto px-4 pb-8">
+        <!-- Step 1: Education -->
+        <div id="step1" class="bg-white rounded-xl shadow-lg p-8 fade-in">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">🎓</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Education Background</h2>
+                <p class="text-gray-600">Tell us about your educational qualifications</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Highest Education Level</label>
+                    <select id="educationLevel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select your education level</option>
+                        <option value="10th">10th Standard</option>
+                        <option value="12th">12th Standard</option>
+                        <option value="diploma">Diploma</option>
+                        <option value="undergraduate">Undergraduate (Pursuing/Completed)</option>
+                        <option value="postgraduate">Postgraduate</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Field of Study</label>
+                    <select id="fieldOfStudy" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select your field</option>
+                        <option value="engineering">Engineering & Technology</option>
+                        <option value="commerce">Commerce & Business</option>
+                        <option value="science">Science & Research</option>
+                        <option value="arts">Arts & Humanities</option>
+                        <option value="medical">Medical & Healthcare</option>
+                        <option value="agriculture">Agriculture</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Academic Year</label>
+                    <select id="academicYear" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select year</option>
+                        <option value="1st">1st Year</option>
+                        <option value="2nd">2nd Year</option>
+                        <option value="3rd">3rd Year</option>
+                        <option value="4th">4th Year</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-8">
+                <button onclick="nextStep(2)" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                    Next: Skills →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Skills -->
+        <div id="step2" class="bg-white rounded-xl shadow-lg p-8 fade-in hidden">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">💪</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Skills</h2>
+                <p class="text-gray-600">Select skills you have or want to develop</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                <div class="skill-category">
+                    <h3 class="font-semibold text-gray-700 mb-3">💻 Technical Skills</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="programming" class="skill-checkbox rounded">
+                            <span class="text-sm">Programming</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="web-development" class="skill-checkbox rounded">
+                            <span class="text-sm">Web Development</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="data-analysis" class="skill-checkbox rounded">
+                            <span class="text-sm">Data Analysis</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="digital-marketing" class="skill-checkbox rounded">
+                            <span class="text-sm">Digital Marketing</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3 class="font-semibold text-gray-700 mb-3">🎨 Creative Skills</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="graphic-design" class="skill-checkbox rounded">
+                            <span class="text-sm">Graphic Design</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="content-writing" class="skill-checkbox rounded">
+                            <span class="text-sm">Content Writing</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="video-editing" class="skill-checkbox rounded">
+                            <span class="text-sm">Video Editing</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="photography" class="skill-checkbox rounded">
+                            <span class="text-sm">Photography</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3 class="font-semibold text-gray-700 mb-3">💼 Business Skills</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="sales" class="skill-checkbox rounded">
+                            <span class="text-sm">Sales</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="customer-service" class="skill-checkbox rounded">
+                            <span class="text-sm">Customer Service</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="project-management" class="skill-checkbox rounded">
+                            <span class="text-sm">Project Management</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="communication" class="skill-checkbox rounded">
+                            <span class="text-sm">Communication</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-8">
+                <button onclick="prevStep(1)" class="bg-gray-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-all duration-300">
+                    ← Back
+                </button>
+                <button onclick="nextStep(3)" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                    Next: Interests →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Interests -->
+        <div id="step3" class="bg-white rounded-xl shadow-lg p-8 fade-in hidden">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">❤️</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Interests</h2>
+                <p class="text-gray-600">What sectors and activities interest you most?</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-4">🏢 Industry Sectors</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="technology" class="interest-checkbox rounded">
+                            <span>Technology & IT</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="healthcare" class="interest-checkbox rounded">
+                            <span>Healthcare & Medicine</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="education" class="interest-checkbox rounded">
+                            <span>Education & Training</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="finance" class="interest-checkbox rounded">
+                            <span>Finance & Banking</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="manufacturing" class="interest-checkbox rounded">
+                            <span>Manufacturing</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-4">🎯 Work Preferences</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="research" class="interest-checkbox rounded">
+                            <span>Research & Development</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="social-impact" class="interest-checkbox rounded">
+                            <span>Social Impact</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="entrepreneurship" class="interest-checkbox rounded">
+                            <span>Entrepreneurship</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="government" class="interest-checkbox rounded">
+                            <span>Government & Policy</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" value="environment" class="interest-checkbox rounded">
+                            <span>Environment & Sustainability</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-8">
+                <button onclick="prevStep(2)" class="bg-gray-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-all duration-300">
+                    ← Back
+                </button>
+                <button onclick="nextStep(4)" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                    Next: Location →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Location -->
+        <div id="step4" class="bg-white rounded-xl shadow-lg p-8 fade-in hidden">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">📍</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Location Preferences</h2>
+                <p class="text-gray-600">Where would you like to do your internship?</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Current State</label>
+                    <select id="currentState" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select your state</option>
+                        <option value="andhra-pradesh">Andhra Pradesh</option>
+                        <option value="andhra-pradesh">Telangana</option>
+                        <option value="bihar">Bihar</option>
+                        <option value="delhi">Delhi</option>
+                        <option value="gujarat">Gujarat</option>
+                        <option value="haryana">Haryana</option>
+                        <option value="karnataka">Karnataka</option>
+                        <option value="kerala">Kerala</option>
+                        <option value="maharashtra">Maharashtra</option>
+                        <option value="punjab">Punjab</option>
+                        <option value="rajasthan">Rajasthan</option>
+                        <option value="tamil-nadu">Tamil Nadu</option>
+                        <option value="uttar-pradesh">Uttar Pradesh</option>
+                        <option value="west-bengal">West Bengal</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Work Mode</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <label class="flex items-center space-x-3 p-4 border-2 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name="workMode" value="remote" class="text-blue-500">
+                            <div>
+                                <div class="font-medium">🏠 Remote</div>
+                                <div class="text-sm text-gray-600">Work from home</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center space-x-3 p-4 border-2 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name="workMode" value="onsite" class="text-blue-500">
+                            <div>
+                                <div class="font-medium">🏢 On-site</div>
+                                <div class="text-sm text-gray-600">Office location</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center space-x-3 p-4 border-2 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name="workMode" value="hybrid" class="text-blue-500">
+                            <div>
+                                <div class="font-medium">🔄 Hybrid</div>
+                                <div class="text-sm text-gray-600">Mix of both</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Willing to relocate?</label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="relocate" value="yes" class="text-blue-500">
+                            <span>Yes, I'm open to relocating</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="relocate" value="no" class="text-blue-500">
+                            <span>No, prefer local opportunities</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-8">
+                <button onclick="prevStep(3)" class="bg-gray-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-all duration-300">
+                    ← Back
+                </button>
+                <button onclick="generateRecommendations()" class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                    Get Recommendations ✨
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 5: Recommendations -->
+        <div id="step5" class="bg-white rounded-xl shadow-lg p-8 fade-in hidden">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">🎯</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Personalized Recommendations</h2>
+                <p class="text-gray-600">Based on your profile, here are the best internship matches</p>
+            </div>
+
+            <div id="recommendationsContainer" class="space-y-6">
+                <!-- Recommendations will be populated here -->
+            </div>
+
+            <div class="flex justify-between mt-8">
+                <button onclick="prevStep(4)" class="bg-gray-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-all duration-300">
+                    ← Back to Location
+                </button>
+                <button onclick="restartProcess()" class="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-700 transition-all duration-300">
+                    Start Over 🔄
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Modal -->
+    <div id="applicationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">📝</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Apply for Internship</h3>
+                <p id="modalInternshipTitle" class="text-gray-600"></p>
+            </div>
+
+            <form id="applicationForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input type="text" id="applicantName" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="applicantEmail" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="applicantPhone" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Why are you interested? (Optional)</label>
+                    <textarea id="applicantMessage" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+            </form>
+
+            <div class="flex space-x-4 mt-6">
+                <button onclick="closeModal()" class="flex-1 bg-gray-500 text-white py-3 rounded-lg font-semibold hover:bg-gray-600 transition-all duration-300">
+                    Cancel
+                </button>
+                <button onclick="submitApplication()" class="flex-1 bg-gradient-to-r from-green-500 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-700 transition-all duration-300">
+                    Submit Application
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentStepNumber = 1;
+        let userProfile = {};
+        let currentApplicationInternship = null;
+
+        // Google Translate initialization
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'hi,bn,te,ta,gu,kn,ml,mr,pa,or,as,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+        // Sample internship data
+        const internshipDatabase = [
+            {
+                id: 1,
+                title: "Software Development Intern",
+                company: "TechCorp India",
+                location: "Bangalore, Karnataka",
+                duration: "3 months",
+                stipend: "₹15,000/month",
+                skills: ["programming", "web-development"],
+                interests: ["technology"],
+                education: ["undergraduate", "postgraduate"],
+                field: ["engineering"],
+                workMode: "hybrid",
+                description: "Work on real-world software projects using modern technologies.",
+                matchScore: 0
+            },
+            {
+                id: 2,
+                title: "Digital Marketing Intern",
+                company: "MarketPro Solutions",
+                location: "Mumbai, Maharashtra",
+                duration: "2 months",
+                stipend: "₹12,000/month",
+                skills: ["digital-marketing", "content-writing", "communication"],
+                interests: ["technology", "entrepreneurship"],
+                education: ["12th", "undergraduate"],
+                field: ["commerce", "arts"],
+                workMode: "remote",
+                description: "Create engaging content and manage social media campaigns.",
+                matchScore: 0
+            },
+            {
+                id: 3,
+                title: "Healthcare Research Assistant",
+                company: "MedResearch Institute",
+                location: "Delhi",
+                duration: "4 months",
+                stipend: "₹18,000/month",
+                skills: ["research", "data-analysis"],
+                interests: ["healthcare", "research"],
+                education: ["undergraduate", "postgraduate"],
+                field: ["medical", "science"],
+                workMode: "onsite",
+                description: "Assist in medical research projects and data collection.",
+                matchScore: 0
+            },
+            {
+                id: 4,
+                title: "Graphic Design Intern",
+                company: "Creative Studios",
+                location: "Pune, Maharashtra",
+                duration: "3 months",
+                stipend: "₹10,000/month",
+                skills: ["graphic-design", "photography"],
+                interests: ["technology", "entrepreneurship"],
+                education: ["12th", "diploma", "undergraduate"],
+                field: ["arts", "engineering"],
+                workMode: "hybrid",
+                description: "Design visual content for digital and print media.",
+                matchScore: 0
+            },
+            {
+                id: 5,
+                title: "Financial Analyst Intern",
+                company: "FinanceFirst Bank",
+                location: "Chennai, Tamil Nadu",
+                duration: "3 months",
+                stipend: "₹16,000/month",
+                skills: ["data-analysis", "communication"],
+                interests: ["finance"],
+                education: ["undergraduate", "postgraduate"],
+                field: ["commerce"],
+                workMode: "onsite",
+                description: "Analyze financial data and prepare reports.",
+                matchScore: 0
+            },
+            {
+                id: 6,
+                title: "Content Writing Intern",
+                company: "ContentCraft Media",
+                location: "Remote",
+                duration: "2 months",
+                stipend: "₹8,000/month",
+                skills: ["content-writing", "communication"],
+                interests: ["education", "social-impact"],
+                education: ["12th", "undergraduate"],
+                field: ["arts", "commerce"],
+                workMode: "remote",
+                description: "Write engaging articles and blog posts on various topics.",
+                matchScore: 0
+            },
+            {
+                id: 7,
+                title: "Environmental Research Intern",
+                company: "GreenEarth Foundation",
+                location: "Hyderabad, Telangana",
+                duration: "4 months",
+                stipend: "₹14,000/month",
+                skills: ["research", "data-analysis"],
+                interests: ["environment", "social-impact"],
+                education: ["undergraduate", "postgraduate"],
+                field: ["science", "engineering"],
+                workMode: "onsite",
+                description: "Conduct environmental impact studies and sustainability research.",
+                matchScore: 0
+            },
+            {
+                id: 8,
+                title: "Customer Service Intern",
+                company: "ServiceExcellence Corp",
+                location: "Kolkata, West Bengal",
+                duration: "2 months",
+                stipend: "₹9,000/month",
+                skills: ["customer-service", "communication"],
+                interests: ["technology", "finance"],
+                education: ["12th", "undergraduate"],
+                field: ["commerce", "arts"],
+                workMode: "hybrid",
+                description: "Handle customer inquiries and provide excellent service support.",
+                matchScore: 0
+            }
+        ];
+
+        // Navigation functions
+        function nextStep(step) {
+            if (validateCurrentStep()) {
+                document.getElementById(`step${currentStepNumber}`).classList.add('hidden');
+                document.getElementById(`step${step}`).classList.remove('hidden');
+                updateStepIndicator(currentStepNumber, step);
+                currentStepNumber = step;
+                document.getElementById('currentStep').textContent = `Step ${step}`;
+                
+                // Collect data from current step
+                collectStepData();
+            }
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step${currentStepNumber}`).classList.add('hidden');
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            updateStepIndicator(currentStepNumber, step);
+            currentStepNumber = step;
+            document.getElementById('currentStep').textContent = `Step ${step}`;
+        }
+
+        function updateStepIndicator(from, to) {
+            document.getElementById(`step${from}-indicator`).classList.remove('step-active');
+            document.getElementById(`step${to}-indicator`).classList.add('step-active');
+        }
+
+        function validateCurrentStep() {
+            switch(currentStepNumber) {
+                case 1:
+                    const education = document.getElementById('educationLevel').value;
+                    const field = document.getElementById('fieldOfStudy').value;
+                    if (!education || !field) {
+                        showNotification('Please fill in all education details', 'error');
+                        return false;
+                    }
+                    break;
+                case 2:
+                    const skills = document.querySelectorAll('.skill-checkbox:checked');
+                    if (skills.length === 0) {
+                        showNotification('Please select at least one skill', 'error');
+                        return false;
+                    }
+                    break;
+                case 3:
+                    const interests = document.querySelectorAll('.interest-checkbox:checked');
+                    if (interests.length === 0) {
+                        showNotification('Please select at least one interest', 'error');
+                        return false;
+                    }
+                    break;
+                case 4:
+                    const state = document.getElementById('currentState').value;
+                    const workMode = document.querySelector('input[name="workMode"]:checked');
+                    if (!state || !workMode) {
+                        showNotification('Please complete all location preferences', 'error');
+                        return false;
+                    }
+                    break;
+            }
+            return true;
+        }
+
+        function collectStepData() {
+            switch(currentStepNumber) {
+                case 2:
+                    userProfile.education = document.getElementById('educationLevel').value;
+                    userProfile.field = document.getElementById('fieldOfStudy').value;
+                    userProfile.academicYear = document.getElementById('academicYear').value;
+                    break;
+                case 3:
+                    userProfile.skills = Array.from(document.querySelectorAll('.skill-checkbox:checked')).map(cb => cb.value);
+                    break;
+                case 4:
+                    userProfile.interests = Array.from(document.querySelectorAll('.interest-checkbox:checked')).map(cb => cb.value);
+                    break;
+                case 5:
+                    userProfile.state = document.getElementById('currentState').value;
+                    userProfile.workMode = document.querySelector('input[name="workMode"]:checked')?.value;
+                    userProfile.relocate = document.querySelector('input[name="relocate"]:checked')?.value;
+                    break;
+            }
+        }
+
+        // Recommendation engine
+        function generateRecommendations() {
+            if (!validateCurrentStep()) return;
+            
+            collectStepData();
+            
+            // Calculate match scores
+            internshipDatabase.forEach(internship => {
+                let score = 0;
+                
+                // Skills match (40% weight)
+                const skillMatches = internship.skills.filter(skill => userProfile.skills.includes(skill)).length;
+                score += (skillMatches / Math.max(internship.skills.length, userProfile.skills.length)) * 40;
+                
+                // Interest match (30% weight)
+                const interestMatches = internship.interests.filter(interest => userProfile.interests.includes(interest)).length;
+                score += (interestMatches / Math.max(internship.interests.length, userProfile.interests.length)) * 30;
+                
+                // Education match (20% weight)
+                if (internship.education.includes(userProfile.education)) {
+                    score += 20;
+                }
+                
+                // Field match (10% weight)
+                if (internship.field.includes(userProfile.field)) {
+                    score += 10;
+                }
+                
+                // Work mode preference bonus
+                if (internship.workMode === userProfile.workMode || userProfile.workMode === 'hybrid') {
+                    score += 5;
+                }
+                
+                internship.matchScore = Math.round(score);
+            });
+            
+            // Sort by match score and get top 5
+            const topRecommendations = internshipDatabase
+                .sort((a, b) => b.matchScore - a.matchScore)
+                .slice(0, 5);
+            
+            displayRecommendations(topRecommendations);
+            nextStep(5);
+            
+            // Show success notification
+            showNotification('Recommendations generated successfully! 🎉', 'success');
+        }
+
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('recommendationsContainer');
+            container.innerHTML = '';
+            
+            recommendations.forEach((internship, index) => {
+                const card = document.createElement('div');
+                card.className = 'card-hover bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg';
+                
+                const matchColor = internship.matchScore >= 80 ? 'text-green-600' : 
+                                 internship.matchScore >= 60 ? 'text-yellow-600' : 'text-orange-600';
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                ${index + 1}
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">${internship.title}</h3>
+                                <p class="text-gray-600">${internship.company}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold ${matchColor}">${internship.matchScore}%</div>
+                            <div class="text-sm text-gray-500">Match</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-blue-500">📍</span>
+                            <span class="text-sm text-gray-700">${internship.location}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-green-500">💰</span>
+                            <span class="text-sm text-gray-700">${internship.stipend}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-purple-500">⏰</span>
+                            <span class="text-sm text-gray-700">${internship.duration}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-orange-500">💼</span>
+                            <span class="text-sm text-gray-700">${internship.workMode}</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4">${internship.description}</p>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-wrap gap-2">
+                            ${internship.skills.slice(0, 3).map(skill => 
+                                `<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">${skill}</span>`
+                            ).join('')}
+                        </div>
+                        <button onclick="openApplicationModal(${internship.id})" 
+                                class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                            Apply Now
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Application modal functions
+        function openApplicationModal(internshipId) {
+            const internship = internshipDatabase.find(i => i.id === internshipId);
+            currentApplicationInternship = internship;
+            
+            document.getElementById('modalInternshipTitle').textContent = internship.title;
+            document.getElementById('applicationModal').classList.remove('hidden');
+            document.getElementById('applicationModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('applicationModal').classList.add('hidden');
+            document.getElementById('applicationModal').classList.remove('flex');
+            document.getElementById('applicationForm').reset();
+        }
+
+        function submitApplication() {
+            const name = document.getElementById('applicantName').value;
+            const email = document.getElementById('applicantEmail').value;
+            const phone = document.getElementById('applicantPhone').value;
+            
+            if (!name || !email || !phone) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Simulate application submission
+            setTimeout(() => {
+                closeModal();
+                showNotification(`Application submitted successfully for ${currentApplicationInternship.title}! 🎉`, 'success');
+                
+                // Schedule follow-up notification
+                setTimeout(() => {
+                    showNotification('Reminder: Check your email for application updates', 'info');
+                }, 10000);
+            }, 1000);
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+                warning: 'bg-yellow-500'
+            };
+            
+            notification.className = `notification ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg max-w-sm`;
+            notification.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                        ✕
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Utility functions
+        function restartProcess() {
+            currentStepNumber = 1;
+            userProfile = {};
+            
+            // Hide all steps except first
+            for (let i = 2; i <= 5; i++) {
+                document.getElementById(`step${i}`).classList.add('hidden');
+            }
+            document.getElementById('step1').classList.remove('hidden');
+            
+            // Reset step indicators
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`step${i}-indicator`).classList.remove('step-active');
+            }
+            document.getElementById('step1-indicator').classList.add('step-active');
+            
+            // Reset forms
+            document.querySelectorAll('form, select, input, textarea').forEach(element => {
+                if (element.type !== 'button' && element.type !== 'submit') {
+                    element.value = '';
+                    element.checked = false;
+                }
+            });
+            
+            document.getElementById('currentStep').textContent = 'Step 1';
+            showNotification('Process restarted. Let\'s find your perfect internship! 🚀', 'info');
+        }
+
+        // Initialize notifications for demo
+        setTimeout(() => {
+            showNotification('Welcome to PM Internship Scheme! 🇮🇳', 'info');
+        }, 2000);
+
+        setTimeout(() => {
+            showNotification('New internships added today! Check recommendations after completing your profile.', 'success');
+        }, 15000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9811b88ec6933a32',t:'MTc1ODIwNzcxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
